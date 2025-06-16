@@ -40,6 +40,7 @@ const IssuesPage = () => {
     }
 
     if (result.data) {
+      await replay()
       close()
       setIssueDescription('')
       setIssueName('')
