@@ -1,7 +1,7 @@
 'use client'
 
 import PageHeader from '../_components/PageHeader'
-import { useQuery } from '@urql/next'
+import { useMutation, useQuery } from '@urql/next'
 import { useState } from 'react'
 import {
   Button,
@@ -18,14 +18,33 @@ import {
 import { PlusIcon } from 'lucide-react'
 import Issue from '../_components/Issue'
 import { IssuesQuery } from '../gql/issuesQuery'
+import { CreateIssueMutation } from '../gql/createIssueMutation'
 
 const IssuesPage = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const [issueName, setIssueName] = useState('')
   const [issueDescription, setIssueDescription] = useState('')
   const [{ data, error, fetching }, replay] = useQuery({ query: IssuesQuery })
+  const [_, createIssue] = useMutation(CreateIssueMutation)
 
-  const onCreate = async (close) => {}
+  const onCreate = async (close) => {
+    const result = await createIssue({
+      input: {
+        name: issueName,
+        content: issueDescription,
+      },
+    })
+
+    if (result.error) {
+      console.error(result.error)
+    }
+
+    if (result.data) {
+      close()
+      setIssueDescription('')
+      setIssueName('')
+    }
+  }
 
   return (
     <div>
